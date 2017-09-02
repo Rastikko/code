@@ -1,0 +1,61 @@
+//   File:   Unit7.hla
+//   Author: Johan de Bruin
+
+program binaryOutput;
+
+#include( "stdlib.hhf" );
+static
+iValue: int8 := 0;
+begin binaryOutput;
+
+stdout.put( "Gimme a decimal value to print: ");
+stdin.geti8();
+mov(al, iValue);
+
+stdout.put( iValue, " is ");
+
+// shift left the 8 bit number, grab and mask the carried bit and print it
+// We copy/paste the code 8 times :p
+rol(1, al);
+lahf();
+and(%0000_0001, AH);
+stdout.puti8(AH);
+
+rol(1, al);
+lahf();
+and(%0000_0001, AH);
+stdout.puti8(AH);
+
+rol(1, al);
+lahf();
+and(%0000_0001, AH);
+stdout.puti8(AH);
+
+rol(1, al);
+lahf();
+and(%0000_0001, AH);
+stdout.puti8(AH);
+
+stdout.put("_");
+
+rol(1, al);
+lahf();
+and(%0000_0001, AH);
+stdout.puti8(AH);
+
+rol(1, al);
+lahf();
+and(%0000_0001, AH);
+stdout.puti8(AH);
+
+rol(1, al);
+lahf();
+and(%0000_0001, AH);
+stdout.puti8(AH);
+
+rol(1, al);
+lahf();
+and(%0000_0001, AH);
+stdout.puti8(AH);
+
+end binaryOutput;

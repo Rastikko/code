@@ -1,0 +1,41 @@
+// File: HelloWorldParameters
+program HelloWorldParameters;
+#include( "stdlib.hhf" );
+static
+iValue : int32 := 0;
+procedure helloParameters( i: int32 ); @nodisplay; @noframe;
+// this procedure uses AX; it must be saved onto the stack first
+static
+iReturnAddress : dword;
+begin helloParameters;
+// entry sequence
+// acquire parameters on the stack
+pop( iReturnAddress );
+pop( i );
+// push back the return address
+push( iReturnAddress );
+// preserve registers
+push( AX );
+// perform subtask
+// muck with AX
+mov( 0, AX );
+// muck with i
+inc( i );
+stdout.put( "Hello, World Procedure!", nl );
+// exit sequence
+// pop all preserved registers
+pop( AX );
+ret();
+end helloParameters;
+begin HelloWorldParameters;
+mov( 100, iValue ); // fill a variable
+mov( 50, AX ); // fill a register
+stdout.put( "value of AX = ", AX, nl );
+stdout.put( "value of iValue = ", iValue, nl );
+stdout.put( "Calling Hello Parameters", nl );
+push( iValue );
+call helloParameters;
+stdout.put( "Returned from Hello Parameters", nl );
+stdout.put( "value of AX = ", AX, nl );
+stdout.put( "value of iValue = ", iValue, nl );
+end HelloWorldParameters;

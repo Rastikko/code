@@ -1,0 +1,38 @@
+// File: Shifter.hla
+program Shifter;
+#include( "stdlib.hhf" );
+static
+iDataValue : int32 := 0; // the value to double
+begin Shifter;
+// Let's see if shift left/right do * and /
+// Prompt the user
+stdout.put( "Enter a decimal value to double: " );
+stdin.get( iDataValue );
+// get the value into the register EAX
+mov( iDataValue, EAX );
+// double EAX -- previously we issued two add instructions
+shl( 1, EAX );
+// stuff the value back into iDataValue
+mov( EAX, iDataValue );
+stdout.put( "Twice the input equals ", iDataValue, nl );
+// Prompt the user
+stdout.put( "Enter a (positive) decimal value to halve:" );
+stdin.get( iDataValue );
+// get the value into the register EAX
+mov( iDataValue, EAX );
+// halve EAX -- IF THE VALUE IS NEGATIVE, THIS WON'T WORK!!
+shr( 1, EAX );
+// stuff the value back into iDataValue
+mov( EAX, iDataValue );
+stdout.put( "Half the input equals ", iDataValue, nl );
+// Prompt the user
+stdout.put( "Enter a positive/negative value to halve:" );
+stdin.get( iDataValue );
+// get the value into the register EAX
+mov( iDataValue, EAX );
+// halve EAX -- This will work on all values
+sar( 1, EAX );
+// stuff the value back into iDataValue
+mov( EAX, iDataValue );
+stdout.put( "Half the input equals ", iDataValue, nl );
+end Shifter;

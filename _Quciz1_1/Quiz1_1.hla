@@ -1,0 +1,48 @@
+//   File:   Quiz11.hla
+//   Author: Johan de Bruin
+
+program quiz11;
+
+#include("stdlib.hhf");
+static
+iFirstValue: int32 := 0;
+iSecondValue: int32 := 0;
+bFirstIteration: boolean := true;
+begin quiz11;
+
+stdout.put("Provide a first number: ");
+stdin.get(iFirstValue);
+
+stdout.put("Provide an second number: ");
+stdin.get(iSecondValue);
+
+cmp(iFirstValue, 1);
+jl invalidParameters;
+
+cmp(iSecondValue, 1);
+jl invalidParameters;
+
+// Let's use EBX to iterate
+mov(1, EBX);
+
+forLoopTerminationCondition:
+cmp( EBX, iSecondValue );
+jg forLoopEnd;
+
+forLoopBody:
+cmp( bFirstIteration, true);
+je skipUnderscoreLabel;
+stdout.put("_");
+skipUnderscoreLabel:
+// TODO: optimize so we don't assign this value each iteration
+mov( false, bFirstIteration);
+stdout.put(iFirstValue, iSecondValue);
+
+forLoopIncrement:
+inc (EBX);
+jmp forLoopTerminationCondition;
+
+forLoopEnd:
+invalidParameters:
+
+end quiz11;

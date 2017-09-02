@@ -1,0 +1,73 @@
+// File: StringProgram.hla
+program StringProgram;
+#include( "stdlib.hhf" );
+
+static
+iSize: int8 := 0; // the number of array elements
+dStringAddress : dword := 0; // holds base address
+
+begin StringProgram;
+
+stdout.put( "Gimme a size for your string: " );
+stdin.get( iSize );
+
+// let's calculate the size of the array
+mov( @size( int8 ), AL );
+mov( iSize, BL );
+inc( BL ); // add one for the ending null character
+mul( BL ); // result is in AX
+mov( 0, EBX ); // copy over to EBX
+mov( AX, BX );
+
+// let's malloc the array
+malloc( EBX );
+mov( EAX, dStringAddress );
+
+// let me try mucking with it
+// for i = 0 to iSize; place i into A[i]
+ForLoop:
+ForLoopInit:
+mov( 0, DL ); // DL is loop index i
+mov( $41, DH ); // DH is the letter A
+mov( EAX, EBX ); // EBX is address of A[i]
+ForLoopTerminationClause:
+cmp( DL, iSize );
+jge ForLoopEnd;
+ForLoopBody:
+mov( DH, [ EBX ] ); // A[i] = ith letter of the alphabet
+ForLoopIncrement:
+inc( DL ); // increment index
+inc( DH );
+inc( EBX );
+jmp ForLoopTerminationClause;
+ForLoopEnd:
+// add ending null
+mov( 0, DH );
+mov( DH, [ EBX ] );
+
+// show the results
+// while A[i] is not null; print A[i]
+PrintLoop:
+PrintLoopInit:
+mov( 0, DH ); // null character
+mov( 0, DL ); // DL is loop index i
+mov( EAX, EBX ); // EBX will be the address of A[i]
+PrintLoopTerminationClause:
+cmp( [ EBX ], DH );
+je PrintLoopEnd;
+PrintLoopBody:
+stdout.put( "A[" );
+stdout.puti8( DL );
+stdout.put( "]=" );
+stdout.putc( [ EBX ] );
+stdout.newln();
+PrintLoopIncrement:
+inc( DL );
+inc( EBX );
+jmp PrintLoopTerminationClause;
+PrintLoopEnd:
+
+// let me try free it up
+free( dStringAddress );
+
+end StringProgram;

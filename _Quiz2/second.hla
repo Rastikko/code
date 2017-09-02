@@ -1,0 +1,71 @@
+//   Ffld( x );ile:   Unit13.hla
+//   Author: Johan de Bruin
+
+program Quiz22;
+
+#include("stdlib.hhf");
+
+procedure collatzRec( value : int8 ); @nodisplay; @noframe;
+static
+    iReturnAddress : dword;
+    iRegisterValue : dword;
+    modtwo : int8 := 2;
+begin collatzRec;
+  mov(EBX, iRegisterValue);
+  pop(iReturnAddress);
+  pop(EBX);
+
+  mov(BL, value);
+
+  mov(iRegisterValue, EBX);
+  push(iReturnAddress);
+
+  cmp(value, 1);
+  je finishLabel;
+
+  mov(0, AX);
+  mov(value, AL);
+  mod(modtwo);
+  cmp(AH, 0);
+  je equalZero;
+  jmp notEqualZero;
+
+  equalZero:
+  sar(1, value);
+  mov(0, EAX);
+  mov(value, AL);
+  push(EAX);
+  call collatzRec;
+  jmp exitFunction;
+
+  notEqualZero:
+  mov(0, EAX);
+  mov(value, AL);
+
+  add(value, AL);
+  add(value, AL);
+  add(1, AL);
+  push(EAX);
+  call collatzRec;
+  jmp exitFunction;
+
+  finishLabel:
+  stdout.put("eventually reaches 1!", nl);
+  // reset
+  // TODO: do we care about EAX register?
+  exitFunction:
+
+  ret();
+end collatzRec;
+
+begin Quiz22;
+
+stdout.put("Provide a value: ");
+mov(0, EBX);
+stdin.get(EBX);
+
+push(EBX);
+
+call collatzRec;
+
+end Quiz22;

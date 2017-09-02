@@ -1,0 +1,117 @@
+//   File:   cs17Final.hla
+// Provides the string manipulation functions puts and gets for students to use
+
+
+// this procedure prompts for a string, writing atmost maxLength bytes into a previously declared array
+// this maxLength should not include the terminating null in its count
+// the string parameter is being passed by its base address
+procedure gets( baseStringAddress: dword; maxLength : uns16 ); @nodisplay; @noframe;
+// uses the register DX, DI, ECX, EBX and EAX
+static
+  dReturnAddress : dword;
+
+  wDIRegister  : word  := 0;   // preserve DI
+  wDXRegister  : word  := 0;   // preserve DX
+  dEAXRegister : dword := 0;   // preserve EAX
+  dEBXRegister : dword := 0;   // preserve EBX
+  dECXRegister : dword := 0;   // preserve ECX
+
+  // I am trying to hide the datatype string for use by CS 17
+  sData : string;
+begin gets;
+  // entry sequence
+  // preserve registers
+  mov( ECX, dECXRegister );
+  mov( EBX, dEBXRegister );
+  mov( EAX, dEAXRegister );
+  mov( DX, wDXRegister );
+  mov( DI, wDIRegister );
+  pop( dReturnAddress );   // This is the return address
+  pop( DI );               // This is the max length able to read
+  pop( EBX );              // This is the base address of the string
+  // push back the return address
+  push( dReturnAddress );
+  // preserve registers
+  push( wDIRegister );
+  push( wDXRegister );
+  push( dECXRegister );
+  push( dEBXRegister );
+  push( dEAXRegister );
+
+  // begin sub-task
+  // prompt for a string
+  stdin.flushInput();
+  stdin.a_gets();         // allocate and read string into EAX
+  mov( EAX, sData );      // save address so it can be free'd later
+  // copy data in sData over into starting at [EBX]
+  mov( 0, DX );        // EBX will be the address of string[i]
+  mov( 0, ECX );
+  getsRepeatLoop:
+     // read no more than DI chars
+     cmp( DI, 0 );
+     je getsEndLoop;
+     cmp( [ EAX + ECX ], DH );
+     je getsEndLoop;
+     mov( [ EAX + ECX ], DL );   // move character desired
+     mov( DL, (type char [ EBX ]) );
+     inc( ECX );
+     inc( EBX );
+     dec( DI );
+     jmp getsRepeatLoop;
+  getsEndLoop:
+  // set ending null
+  mov( DH, (type char [ EBX ]) );
+  // release sData
+  strfree( sData );
+
+  // exit sequence
+  // restore registers
+  pop( EAX );
+  pop( EBX );
+  pop( ECX );
+  pop( DX );
+  pop( DI );
+  // transfer control
+  ret( );
+end gets;
+
+// this procedure prints the contents of a null-terminated string
+// the string parameter is being passed by its base address
+procedure puts( baseStringAddress: dword ); @nodisplay; @noframe;
+// uses the register EBX
+static
+  dReturnAddress : dword;
+
+  wDXRegister  : word  := 0;   // preserve DX
+  dEBXRegister : dword := 0;   // preserve EBX
+begin puts;
+  // entry sequence
+  // preserve registers
+  mov( EBX, dEBXRegister );
+  mov( DX, wDXRegister );
+  pop( dReturnAddress );   // This is the return address
+  pop( EBX );              // This is the base address of the string
+  // push back the return address
+  push( dReturnAddress );
+  // preserve registers
+  push( dEBXRegister );
+  push( wDXRegister );
+
+  // begin sub-task
+  // print null-terminated string
+  mov( 0, DX );            // EBX will be the address of string[i]
+  putsRepeatLoop:
+     cmp( [ EBX ], DH );
+     je putsEndLoop;
+     stdout.putc( [ EBX ] );
+     inc( EBX );
+     jmp putsRepeatLoop;
+  putsEndLoop:
+
+  // exit sequence
+  // restore registers
+  pop( DX );
+  pop( EBX );
+  // transfer control
+  ret( );
+end puts;

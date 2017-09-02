@@ -1,0 +1,68 @@
+//   Ffld( x );ile:   Unit13.hla
+//   Author: Johan de Bruin
+
+program Unit13;
+
+#include("stdlib.hhf");
+static
+inputChar : byte;
+
+procedure multitap( myCharacter : byte ); @nodisplay; @noframe;
+static
+iReturnAddress : dword;
+iRegisterValue : dword;
+iPadNumber : int16;
+iThree : int8 := 3;
+
+begin multitap;
+// preserve registers EBX
+mov(EAX, iRegisterValue);
+pop(iReturnAddress);
+pop(AX); // padded value
+
+cmp(AX, 96);
+JL isCapitalizedCharacter;
+sub(32, AX);
+
+isCapitalizedCharacter:
+// TODO: handle special cases after the S somehow..
+// HACK: I ended not using myCharacter on how integer aritmetic works
+
+// (CHARACTER POSITION - ASCII_A_POSITION) / 3 =>
+  // quoten + 2 first number, reminder times to repeat
+sub(65, AX);
+div(iThree);
+add(2, AL);
+
+stdout.put("in Multi-tap, that's ");
+DoWhileLpBody: // I = I - 1;
+dec( AH );
+stdout.puti8(AL);
+cmp( AH, -1 ); // is I not greater or equal than 0?
+jng DoWhileLpDone; // then end loop
+jmp DoWhileLpBody; // continue looping
+DoWhileLpDone:
+
+// put EBX back to normal
+mov(iRegisterValue, EAX);
+// push back the return address
+push( iReturnAddress );
+
+ret();
+end multitap;
+
+begin Unit13;
+
+stdout.put("Feed Me: ");
+stdin.flushInput();
+stdin.getc();
+
+// we pad AL into a multiple of 16-bits to be able to push to stack
+mov(AL, inputChar);
+mov(0, BX);
+mov(inputChar, BL);
+push(BX);
+
+call multitap;
+
+end Unit13;

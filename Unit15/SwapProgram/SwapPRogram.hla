@@ -1,0 +1,63 @@
+// File: SwapProgram
+program SwapProgram;
+#include( "stdlib.hhf" );
+static
+iValue1 : int8 := 0; // the user data
+iValue2 : int8 := 0;
+// this procedure swaps the contents of i and j,
+// 2 reference parameters
+// although byte variables are passed as parameters,
+// no stack alignment is necessary because 32-bit
+// addresses are being sent instead
+procedure swap( var i: int8; var j : int8 ); @nodisplay; @noframe;
+// uses the registers EDX, ECX and EBX
+static
+dReturnAddress : dword;
+iTemporary : int8;
+dEDXRegister : dword := 0; // preserve EDX
+dECXRegister : dword := 0; // preserve ECX
+dEBXRegister : dword := 0; // preserve EBX
+begin swap;
+// entry sequence
+// preserve registers
+mov( EBX, dEBXRegister );
+mov( ECX, dECXRegister );
+mov( EDX, dEDXRegister );
+pop( dReturnAddress ); // This is the return address
+pop( EBX ); // This is the address of j
+pop( ECX ); // This is the address of i
+// push back the return address
+push( dReturnAddress );
+// preserve registers
+push( dEDXRegister );
+push( dECXRegister );
+push( dEBXRegister );
+// begin sub-task
+mov( [EBX], EDX ); // EDX = j
+mov( DL, iTemporary ); // temporary = j
+mov( [ECX], EDX ); // EDX = i
+mov( DL, [EBX] ); // j = i
+mov( iTemporary, DL ); // EDX = j
+mov( DL, [ECX] ); // i = temporary
+// exit sequence
+// restore registers
+pop( EBX );
+pop( ECX );
+pop( EDX );
+// transfer control
+ret( ) ;
+end swap;
+begin SwapProgram;
+stdout.put( "gimme a value to swap: " );
+stdin.get( iValue1 );
+stdout.put( "gimme another value to swap:" );
+stdin.get( iValue2 );
+lea( EAX, iValue1 ); // get address of iValue1
+push( EAX );
+lea( EAX, iValue2 ); // get address of iValue2
+push( EAX );
+stdout.put( "swapping...", nl );
+call swap;
+stdout.put( "iValue1 = ", iValue1, nl );
+stdout.put( "iValue2 = ", iValue2, nl );
+end SwapProgram;

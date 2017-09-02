@@ -1,0 +1,14 @@
+// File: Decimal2Hex.hla
+program Decimal2Hex;
+#include( "stdlib.hhf" );
+
+static
+iValue: int32 := 0;
+begin Decimal2Hex;
+
+stdout.put( "Input a decimal value: " );
+stdin.get( iValue );
+mov( iValue, EAX );
+stdout.put( "The value ", iValue, " in hex is $", EAX, nl );
+
+end Decimal2Hex;

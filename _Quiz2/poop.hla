@@ -1,0 +1,48 @@
+//   Ffld( x );ile:   Unit13.hla
+//   Author: Johan de Bruin
+
+program Unit13;
+
+#include("stdlib.hhf");
+static
+inputChar : byte;
+
+procedure bar( data : int16 ); @nodisplay; @noframe;
+static
+    iTemp : int16;
+    iReturnAddress : dword;
+begin bar;
+    // retrieve return address from the stack
+    pop( iReturnAddress );
+    // retrieve 16 bits of padding from the stack
+    pop( iTemp );
+    // retrieve actual parameter from the stack
+    pop( data );
+    // do somework...
+    mov( 0, EAX );
+    mov( 0, EBX );
+    mov( 0, ECX );
+    mov( 0, EDX );
+    inc( EAX );
+    add( EBX, EAX );
+    inc( EBX );
+    add( EBX, ECX );
+    inc( EDX );
+    ret();
+end bar;
+
+begin Unit13;
+
+stdout.put("Feed Me: ");
+stdin.flushInput();
+stdin.getc();
+
+// we pad AL into a multiple of 16-bits to be able to push to stack
+mov(AL, inputChar);
+mov(0, BX);
+mov(inputChar, BL);
+push(BX);
+
+call multitap;
+
+end Unit13;

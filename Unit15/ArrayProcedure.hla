@@ -1,0 +1,118 @@
+// File: ArrayProcedure.hla
+program ArrayProcedure;
+#include( "stdlib.hhf" );
+
+static
+iSize: int8 := 0; // the number of array elements
+dArrayBaseAddress : dword := 0; // holds base address
+
+// this procedure prints the contents of an array
+// the array parameter is being passed by its base address
+procedure printArray( baseArrayAddress: dword; arraySize : int8 ); @nodisplay; @noframe;
+// uses the registers DX and EBX
+static
+dReturnAddress : dword;
+iTemporary : int8;
+
+dDXRegister : word := 0; // preserve DL
+dEBXRegister : dword := 0; // preserve EBX
+dCXRegister : word := 0; // preserve CH
+begin printArray;
+// entry sequence
+// preserve registers
+mov( EBX, dEBXRegister );
+mov( DX, dDXRegister );
+mov( CX, dCXRegister );
+pop( dReturnAddress ); // This is the return address
+pop( DX ); // This is junk to align the stack
+pop( DX ); // This is the arraySize
+mov( DL, arraySize );
+pop( EBX ); // This is the base address of the array
+// push back the return address
+push( dReturnAddress );
+// preserve registers
+push( dCXRegister );
+push( dDXRegister );
+push( dEBXRegister );
+
+// begin sub-task
+// for i = 0 to iSize; print A[i]
+PrintLoop:
+PrintLoopInit:
+mov( 0, DL ); // DL is loop index i
+// EBX will be the address of A[i]
+PrintLoopTerminationClause:
+cmp( DL, arraySize );
+jge PrintLoopEnd;
+PrintLoopBody:
+stdout.put( "A[" );
+stdout.puti8( DL );
+stdout.put( "]=" );
+// FIX
+mov( [ EBX ], CH );
+stdout.puti8( CH );
+// BROKE
+// stdout.puti8( [ EBX ] );
+stdout.newln();
+PrintLoopIncrement:
+inc( DL );
+inc( EBX );
+jmp PrintLoopTerminationClause;
+PrintLoopEnd:
+
+// exit sequence
+// restore registers
+pop( EBX );
+pop( DX );
+pop( CX );
+// transfer control
+ret( ) ;
+end printArray;
+
+begin ArrayProcedure;
+
+stdout.put( "Gimme a size for your array: " );
+stdin.get( iSize );
+
+// let's calculate the size of the array
+mov( @size( int8 ), AL );
+mov( iSize, BL );
+mul( BL ); // result is in AX
+mov( 0, EBX ); // copy over to EBX
+mov( AX, BX );
+
+// let's malloc the array
+malloc( EBX );
+mov( EAX, dArrayBaseAddress );
+
+// let me try mucking with it
+// for i = 0 to iSize; place i into A[i]
+ForLoop:
+ForLoopInit:
+mov( 0, DL ); // DL is loop index i
+mov( EAX, EBX ); // EBX is address of A[i]
+ForLoopTerminationClause:
+cmp( DL, iSize );
+jge ForLoopEnd;
+ForLoopBody:
+mov( DL, [ EBX ] ); // A[i] = i
+ForLoopIncrement:
+inc( DL ); // increment index
+inc( EBX );
+jmp ForLoopTerminationClause;
+ForLoopEnd:
+
+// show the results
+stdout.put( "Here's the array contents", nl );
+push( dArrayBaseAddress );
+mov( 0, ECX );
+mov( iSize, CL );
+push( CX );
+// pushing on extra junk to align the stack
+push( CX );
+call printArray;
+
+// let me try free it up
+free( dArrayBaseAddress );
+
+end ArrayProcedure;

@@ -1,0 +1,59 @@
+// File: ArrayMallocProgram.hla
+program ArrayMallocProgram;
+#include( "stdlib.hhf" );
+static
+iSize: int8 := 0; // total array elements
+dArrayBaseAddress : dword := 0; // holds base address
+begin ArrayMallocProgram;
+stdout.put( "Gimme a size for your array: " );
+stdin.get( iSize );
+// let's calculate the size of the array
+mov( @size( int8 ), AL );
+mov( iSize, BL );
+mul( BL ); // result is in AX
+mov( 0, EBX ); // copy over to EBX
+mov( AX, BX );
+// let's malloc the array
+malloc( EBX );
+mov( EAX, dArrayBaseAddress );
+// let me try mucking with it
+// for i = 0 to iSize; place i into A[i]
+ForLoop:
+ForLoopInit:
+mov( 0, DL ); // DL is loop index i
+mov( EAX, EBX ); // EBX is address of A[i]
+ForLoopTerminationClause:
+cmp( DL, iSize );
+jge ForLoopEnd;
+ForLoopBody:
+mov( DL, [ EBX ] ); // A[i] = i
+ForLoopIncrement:
+inc( DL ); // increment index
+inc( EBX );
+jmp ForLoopTerminationClause;
+ForLoopEnd:
+
+// show the results
+stdout.put( "Here's the array contents", nl );
+// for i = 0 to iSize; print A[i]
+PrintLoop:
+PrintLoopInit:
+mov( 0, DL ); // DL is loop index i
+mov( EAX, EBX ); // EBX is the address of A[i]
+PrintLoopTerminationClause:
+cmp( DL, iSize );
+jge PrintLoopEnd;
+PrintLoopBody:
+stdout.put( "A[" );
+stdout.puti8( DL );
+stdout.put( "]=" );
+stdout.puti8( [ EBX ] );
+stdout.newln();
+PrintLoopIncrement:
+inc( DL );
+inc( EBX );
+jmp PrintLoopTerminationClause;
+PrintLoopEnd:
+// let me try free it up
+free( dArrayBaseAddress );
+end ArrayMallocProgram;

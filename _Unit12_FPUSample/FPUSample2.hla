@@ -1,0 +1,28 @@
+program FPUSample;
+#include( "stdlib.hhf" );
+static
+    x : real32;
+    y : real32;
+    z : real32;
+begin FPUSample;
+  stdout.put ("Feed Me X:");
+  stdin.get( x );
+  stdout.put ("Feed Me Y:");
+  stdin.get( y );
+
+  // Compute Z := sqrt(x**2 + y**2);
+  finit();
+  fld( x );              // Load X.
+  fld( st0 );            // Duplicate X on TOS.
+  fmulp();               // Compute X**2.
+  fld( y );              // Load Y
+  fld( st0 );            // Duplicate Y.
+  fmulp();               // Compute Y**2.
+  faddp();               // Compute X**2 + Y**2.
+  fsqrt();               // Compute sqrt( X**2 + Y**2 ).
+  fstp( z );             // Store result away into Z.
+
+  stdout.put( "the square root of x squared + y squared = " );
+  stdout.put( z, nl );
+
+end FPUSample;

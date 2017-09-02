@@ -1,0 +1,21 @@
+program IORoutines;
+#include( "stdlib.hhf" );
+static
+i32: int32;
+begin IORoutines;
+stdout.put( "Enter a hexadecimal value: " );
+// if I say, stdin.get( i32 ), it'll be read in decimal
+// so I'm going to try something different...
+stdin.getd(); // getdw places the result into EAX
+mov( EAX, i32 );
+stdout.put( "The value you entered was $" );
+// if I say, stdout.put( i32 ), it'll be output in decimal
+// so I'm going to try something different...
+stdout.putd( i32 );
+stdout.newln();
+stdout.put( "In decimal, the value you entered is " );
+// if I say, stdout.put( EAX ), it'll be output in hex
+// so I'm going to try something different...
+stdout.puti32( EAX );
+stdout.newln();
+end IORoutines;

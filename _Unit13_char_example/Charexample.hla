@@ -1,0 +1,29 @@
+// File: CharExample
+program CharExample;
+#include( "stdlib.hhf" );
+
+static
+cBigA : byte := $41; // A = hex 41
+cLittlea : byte := $61; // a = hex 61
+cMyCharacter : byte := 0;
+begin CharExample;
+
+// show the results
+stdout.put( "Here is A=" );
+stdout.putc( cBigA );
+stdout.put( " Here is a=" );
+stdout.putc( cLittlea );
+stdout.newln();
+stdout.put( "Gimme a character, any character: " );
+// always a good idea to flush buffer before reading
+stdin.flushInput();
+stdin.getc(); // stores result in AL
+mov( AL, cMyCharacter );
+stdout.put( "Here's your character: " );
+stdout.putc( cMyCharacter );
+
+//??/
+// stdout.putcSize( charvar, widthInt32, fillchar );
+
+
+end CharExample;

@@ -1,0 +1,135 @@
+//   File:   Unit11.hla
+//   Author: Johan de Bruin
+
+program Unit11;
+
+#include("stdlib.hhf");
+static
+iValue1 : int16 := 0;
+iValue2 : int16 := 0;
+iValue3 : int16 := 0;
+
+procedure middleFinder( x: int16; y : int16; z : int16 ); @nodisplay; @noframe;
+static
+iReturnAddress : dword;
+
+begin middleFinder;
+// acquire parameters on the stack
+pop(iReturnAddress);
+
+pop(z);
+pop(y);
+pop(x);
+
+// push back the return address
+push(iReturnAddress);
+
+// we store old registry to not loose them except AL that is the return value
+push(DX);
+push(CX);
+
+// AL will keep track if they are equal
+mov(0, AL);
+// DX is the first middle candidate, at the end will always be the middle
+mov(x, DX);
+// CX is the alternative middle candidate
+mov(0, CX);
+
+
+// x < y && x > z => x
+// x < y && x < z && z < y => z
+// x < y && x < z && z > y => y
+
+cmp(DX, y);
+jg xIsGreaterY;
+je xIsEqualY;
+
+xIsSmallerY:
+  mov(x, DX);
+  mov(y, CX);
+  jmp compareDToZ;
+
+xIsGreaterY:
+  mov(y, DX);
+  mov(x, CX);
+  jmp compareDToZ;
+
+xIsEqualY:
+  mov(x, DX);
+  mov(x, CX);
+  inc(AL);
+
+compareDToZ:
+
+cmp(DX, z);
+jg dIsGreaterZ;
+je dIsEqualZ;
+
+dIsSmallerZ:
+  // Z might be the middle number compare with CX
+  jmp compareZtoC;
+
+dIsGreaterZ:
+  // DX is the middle number whoop!
+  jmp endOfProcedure;
+
+dIsEqualZ:
+  inc(AL);
+  jmp endOfProcedure;
+
+compareZtoC:
+cmp(z, CX);
+jg zIsGreaterC;
+je zIsEqualC;
+
+zIsSmaller:
+  mov(z, DX);
+  jmp endOfProcedure;
+
+zIsGreaterC:
+  mov(CX, DX);
+  jmp endOfProcedure;
+
+zIsEqualC:
+  inc(AL);
+
+endOfProcedure:
+
+stdout.putu16(DX);
+stdout.put(" is in the middle!", nl);
+
+// We restore the registers except the contracted AL
+// we store old registry to not loose them except AL that is the return value
+pop(CX);
+pop(DX);
+ret();
+end middleFinder;
+
+begin Unit11;
+
+stdout.put("Feed Me X: ");
+stdin.get(iValue1);
+stdout.put("Feed Me Y: ");
+stdin.get(iValue2);
+stdout.put("Feed Me Z: ");
+stdin.get(iValue3);
+push(iValue1);
+push(iValue2);
+push(iValue3);
+call middleFinder;
+
+cmp(AL, 2);
+je numberEqual;
+
+// TODO: adjust AL so we don't have to fake it
+stdout.put("AL = 0");
+jmp endOfProgram;
+
+numberEqual:
+stdout.put("X and Y and Z are all equal!", nl);
+// TODO: adjust AL so we don't have to fake it
+stdout.put("AL = 1");
+
+endOfProgram:
+
+end Unit11;

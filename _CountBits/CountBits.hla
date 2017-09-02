@@ -1,0 +1,93 @@
+// File: CountBit.hla
+program CountBit;
+#include( "stdlib.hhf" );
+static
+iDataValue : int32 := 0; // the value to inspect
+begin CountBit;
+// Prompt the user
+stdout.put( "Please provide a value to inspect: " );
+stdin.get( iDataValue );
+// get the value into the registers EBX and ECX
+mov( iDataValue, EBX );
+mov( iDataValue, ECX );
+// initialize DH to zero; we'll count set bits in DH
+mov( 0, DH );
+// This logic counts one bit. Since we don't know how to
+// loop yet, it is repeated abunch of times.
+// rotate right EBX -- L.O. bit gets tossed to the carry bit
+ror( 1, EBX );
+// put lower eight EFLAG bits into register AH
+lahf();
+// mask out all bits in AH but bit position zero
+and( %0000_0001, AH );
+// whatever is in the carry bit, fold it into DH
+add( AH, DH );
+// Repeat logic to count a second bit
+// rotate right EBX -- L.O. bit gets tossed to the carry bit
+ror( 1, EBX );
+// put lower eight EFLAG bits into register AH
+lahf();
+// mask out all bits in AH but bit position zero
+and( %0000_0001, AH );
+// whatever is in the carry bit, fold it into DH
+add( AH, DH );
+// Repeat logic to count a third bit
+// rotate right EBX -- L.O. bit gets tossed to the carry bit
+ror( 1, EBX );
+// put lower eight EFLAG bits into register AH
+lahf();
+// mask out all bits in AH but bit position zero
+and( %0000_0001, AH );
+// whatever is in the carry bit, fold it into DH
+add( AH, DH );
+// Repeat logic to count a fourth bit
+// rotate right EBX -- L.O. bit gets tossed to the carry bit
+ror( 1, EBX );
+// put lower eight EFLAG bits into register AH
+lahf();
+// mask out all bits in AH but bit position zero
+and( %0000_0001, AH );
+// whatever is in the carry bit, fold it into DH
+add( AH, DH );
+// Repeat logic to count a fifth bit
+// rotate right EBX -- L.O. bit gets tossed to the carry bit
+ror( 1, EBX );
+// put lower eight EFLAG bits into register AH
+lahf();
+// mask out all bits in AH but bit position zero
+and( %0000_0001, AH );
+// whatever is in the carry bit, fold it into DH
+add( AH, DH );
+// Repeat logic to count a sixth bit
+// rotate right EBX -- L.O. bit gets tossed to the carry bit
+ror( 1, EBX );
+// put lower eight EFLAG bits into register AH
+lahf();
+// mask out all bits in AH but bit position zero
+and( %0000_0001, AH );
+// whatever is in the carry bit, fold it into DH
+add( AH, DH );
+// Repeat logic to count a seventh bit
+// rotate right EBX -- L.O. bit gets tossed to the carry bit
+ror( 1, EBX );
+// put lower eight EFLAG bits into register AH
+lahf();
+// mask out all bits in AH but bit position zero
+and( %0000_0001, AH );
+// whatever is in the carry bit, fold it into DH
+add( AH, DH );
+// Repeat logic one last time to count an eighth bit
+// rotate right EBX -- L.O. bit gets tossed to the carry bit
+ror( 1, EBX );
+// put lower eight EFLAG bits into register AH
+lahf();
+// mask out all bits in AH but bit position zero
+and( %0000_0001, AH );
+// whatever is in the carry bit, fold it into DH
+add( AH, DH );
+
+// Finally, show the results
+stdout.put( "The value ", iDataValue, " = ", ECX, " has " );
+stdout.puti8( DH );
+stdout.put( " set bit(s).", nl );
+end CountBit;

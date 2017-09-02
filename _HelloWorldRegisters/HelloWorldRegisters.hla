@@ -1,0 +1,28 @@
+// File: HelloWorldRegisters
+program HelloWorldRegisters;
+#include( "stdlib.hhf" );
+procedure helloRegisters; @nodisplay; @noframe;
+// this procedure uses AX; it must be saved onto the stack first
+begin helloRegisters;
+// entry sequence
+// preserve registers
+push( AX );
+
+// perform subtask
+// muck with AX
+mov( 0, AX );
+stdout.put( "Hello, World Procedure!", nl );
+
+// exit sequence
+// pop all preserved registers
+pop( AX );
+ret();
+end helloRegisters;
+begin HelloWorldRegisters;
+mov( 50, AX ); // fill a register
+stdout.put( "value of AX = ", AX, nl );
+stdout.put( "Calling Hello Register", nl );
+call helloRegisters;
+stdout.put( "Returned from Hello Register", nl );
+stdout.put( "value of AX = ", AX, nl );
+end HelloWorldRegisters;

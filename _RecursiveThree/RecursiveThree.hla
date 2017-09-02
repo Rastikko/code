@@ -1,0 +1,85 @@
+program RecursiveThree;
+#include( "stdlib.hhf" );
+static
+  iDataValue1 : int16 := 0;
+  iDataValue2 : int16 := 0;
+
+////////////////////////////
+// Function isDivideableByThreeRec
+////////////////////////////
+procedure isDivideableByThreeRec( n : int16 ); @nodisplay; @noframe;
+static
+	returnAddress : dword;
+	temp: int16;
+
+begin isDivideableByThreeRec;
+// this procedure returns its answer in EAX, so we don't need to save that
+// register.  No other register is used, so no other registers need to be saved
+	////////////////// get params from stack ///////////////////
+	pop( returnAddress );
+	pop( temp );			//padding - stack must be 32-bit aligned
+	pop( n );
+	push( returnAddress );
+
+	cmp( n, 0 );				//if n=0, return true =1
+	je ReturnTrue;
+
+	cmp( n, 0 );				//if n<0, return false =0
+	jle ReturnFalse;
+	jmp Neither;				//else isDivideableByThreeRec( n-3 )
+
+
+	ReturnTrue:
+		mov( 1, EAX );			//return true
+		jmp ExitSequence;
+
+
+	ReturnFalse:
+		mov( 0, EAX );			//return false
+		jmp ExitSequence;
+
+
+	Neither:
+		sub( 3, n );				//n-3
+
+		// calling isDivideableByThreeRec( n-3 );
+		push( n );
+		push( temp );     // padding
+		call isDivideableByThreeRec;
+		jmp ExitSequence;
+
+
+
+	ExitSequence:
+	ret();
+
+end isDivideableByThreeRec;
+
+
+////////// main program //////////////
+begin RecursiveThree;
+
+  stdout.put( "Gimme an n: " );
+  stdin.get( iDataValue1 );
+  push( iDataValue1 );
+  push( iDataValue2 );		//padding
+  call isDivideableByThreeRec;
+  // this function leaves the answer in EAX
+  cmp(EAX, 1);
+  je ISDIVISIBLE;
+  jmp NOTDIVISIBLE;
+
+
+  ISDIVISIBLE:
+  		stdout.put("true",nl);
+		jmp EndProgram;
+
+  NOTDIVISIBLE:
+  		stdout.put("false",nl);
+		jmp EndProgram;
+
+  stdout.newln();
+
+  EndProgram:
+
+end RecursiveThree;

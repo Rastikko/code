@@ -1,0 +1,26 @@
+//   File:   hello.asm
+//   Author: Howard A. Stahl
+//
+//   Creation Date:  Thursday, December 20, 2001
+//
+//
+//   DESCRIPTION
+//
+//   The simplest Assembler "Hello World" program I could write in HLA.  Students
+//   should use this program to prove that their environment is setup 
+//   properly.  Once this program is assembled into an EXE program, you should be able
+//   to type this:
+//
+//       HELLO
+//
+//   and get:
+//
+//       Hello, World of Assembly Language
+//
+//   as the output from the program.  The program just displays a short
+//   message.  Nothing more complicated.
+program helloWorld;
+#include( "stdlib.hhf" );
+begin helloWorld;
+stdout.put( "Hello, World of Assembly Language", nl );
+end helloWorld;

@@ -1,0 +1,17 @@
+program labelDemo;
+#include( "stdlib.hhf" );
+static
+// Note labels lbl1 and lbl2 have not yet been encountered
+iLbl1Location : dword := &lbl1; // note address-of operator
+iLbl2Location : dword := &lbl2;
+begin labelDemo;
+lbl1:
+lea( EBX, lbl1 ); // uses lea instruction
+lbl2:
+lea( EAX, lbl2 );
+stdout.put( "Using the lea instruction", nl );
+stdout.put( "--->&lbl1=$", EBX, " &lbl2=", EAX, nl );
+stdout.put( "Using the & instruction", nl );
+stdout.put( "--->&lbl1=$", iLbl1Location );
+stdout.put( " &lbl2=", iLbl2Location, nl );
+end labelDemo;

@@ -1,0 +1,10 @@
+// File: Hex2Decimal.hla
+program Hex2Decimal;
+#include( "stdlib.hhf" );
+begin Hex2Decimal;
+stdout.put( "Input a hexadecimal value: " );
+stdin.get( EBX );
+stdout.put( "$", ebx, " converted to decimal is " );
+stdout.puti32( EBX ); // Note: puti32 does the conversion
+stdout.newln();
+end Hex2Decimal;

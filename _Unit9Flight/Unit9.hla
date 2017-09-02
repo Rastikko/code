@@ -1,0 +1,155 @@
+//   File:   Unit9.hla
+//   Author: Johan de Bruin
+
+program flightPriceCalculator;
+
+#include("stdlib.hhf");
+static
+iFlight: int32 := 0;
+iFlightCost: int32 := 0;
+iFlightMiles: int32 := 0;
+iFlightBags: int8 := 0;
+bFlightMeal: boolean := false;
+bFlightFirstClass: boolean := false;
+
+begin flightPriceCalculator;
+
+stdout.put( "Feed me(2 hex digits): " );
+stdin.get( EBX );
+
+// DL will be used has an iteration counter
+mov( 0, DL );
+mov( 1, EDI );
+
+forLoopTerminationCondition:
+cmp( DL, 7 );
+jg forLoopEnd;
+
+forLoopBody:
+
+compareBitZero:
+cmp( DL, 0 );
+jne compareBitOne;
+test( EDI, EBX );
+jz forLoopIncrement;
+add (25, iFlightCost);
+inc (iFlightBags);
+jmp forLoopIncrement;
+
+compareBitOne:
+cmp( DL, 1 );
+jne compareBitTwo;
+test( EDI, EBX );
+jz forLoopIncrement;
+add (50, iFlightCost);
+add (2, iFlightBags);
+jmp forLoopIncrement;
+
+compareBitTwo:
+cmp( DL, 2 );
+jne compareBitThree;
+test( EDI, EBX );
+jz forLoopIncrement;
+// 100 miles from 2^0 * 100
+add (100, iFlightMiles);
+add (50, iFlightCost);
+jmp forLoopIncrement;
+
+compareBitThree:
+cmp( DL, 3 );
+jne compareBitFour;
+test( EDI, EBX );
+jz forLoopIncrement;
+// 200 miles from 2^1 * 100
+add (200, iFlightMiles);
+add (100, iFlightCost);
+jmp forLoopIncrement;
+
+compareBitFour:
+cmp( DL, 4 );
+jne compareBitFive;
+test( EDI, EBX );
+jz forLoopIncrement;
+// 400 miles from 2^2 * 100
+add (400, iFlightMiles);
+add (200, iFlightCost);
+jmp forLoopIncrement;
+
+compareBitFive:
+cmp( DL, 5 );
+jne compareBitSix;
+test( EDI, EBX );
+jz forLoopIncrement;
+// 800 miles from 2^3 * 100
+add (800, iFlightMiles);
+add (400, iFlightCost);
+jmp forLoopIncrement;
+
+compareBitSix:
+cmp( DL, 6 );
+jne compareBitSeven;
+test( EDI, EBX );
+jz forLoopIncrement;
+mov (true, bFlightMeal);
+add (10, iFlightCost);
+jmp forLoopIncrement;
+
+compareBitSeven:
+cmp( DL, 7 );
+jne forLoopIncrement;
+test( EDI, EBX );
+jz forLoopIncrement;
+mov (true, bFlightFirstClass);
+mov (iFlightCost, ECX);
+add (ECX, iFlightCost);
+jmp forLoopIncrement;
+
+forLoopIncrement:
+inc( DL );
+rol( 1, EDI ); // prepare bit string for next iteration
+jmp forLoopTerminationCondition;
+
+forLoopEnd:
+
+displayTicketPrice:
+// If there are no miles
+cmp (iFlightMiles, 0);
+je displayErrorMessage;
+
+firstClass:
+cmp (bFlightFirstClass, true);
+jne displayEconomy;
+stdout.put ("First class ticket", nl);
+jmp bags;
+displayEconomy:
+stdout.put ("Economy ticket", nl);
+
+bags:
+cmp (iFlightBags, 0);
+jne displayBags;
+stdout.put ("No bags", nl);
+jmp meal;
+displayBags:
+stdout.put(iFlightBags, " bags ", nl);
+
+meal:
+cmp (bFlightMeal, false);
+jne displayMeal;
+stdout.put ("No meal", nl);
+jmp miles;
+displayMeal:
+stdout.put("Meal purchased", nl);
+
+miles:
+stdout.put(iFlightMiles, " miles flown", nl);
+
+stdout.put("Total Fees = $ ", iFlightCost);
+jmp endOfDisplay;
+
+displayErrorMessage:
+stdout.put("Miles flown cannot be zero!");
+
+endOfDisplay:
+
+// Display the value for the flight
+end flightPriceCalculator;

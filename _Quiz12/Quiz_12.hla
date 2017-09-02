@@ -1,0 +1,65 @@
+//   File:   Quiz12.hla
+//   Author: Johan de Bruin
+
+program quiz12;
+
+#include("stdlib.hhf");
+static
+iValue: int32 := 0;
+bFirstIteration: boolean := true;
+
+begin quiz12;
+
+stdout.put("Feed Me: ");
+stdin.get(iValue);
+
+cmp(iValue, 1);
+jl invalidParameters;
+
+// Let's use EBX to iterate
+mov(1, EBX);
+
+forLoopTerminationCondition:
+cmp( EBX, iValue );
+jg forLoopEnd;
+
+forLoopBody:
+cmp(bFirstIteration, true);
+je printBeginOrEnd;
+stdout.put(nl);
+cmp(EBX, iValue);
+je printBeginOrEnd;
+jmp printBody;
+
+printBeginOrEnd:
+mov (false, bFirstIteration);
+mov( iValue, EAX );
+checkPrintBeginOrEnd:
+cmp(EAX, 0);
+je forLoopIncrement;
+stdout.put(iValue);
+dec(EAX);
+jmp checkPrintBeginOrEnd;
+
+printBody:
+stdout.put(iValue);
+mov( iValue, EAX );
+sub (2, EAX);
+checkPrintBody:
+cmp(EAX, 0);
+jle printBodyEnd;
+stdout.put(" ");
+dec(EAX);
+jmp checkPrintBody;
+printBodyEnd:
+stdout.put(iValue);
+
+forLoopIncrement:
+inc (EBX);
+jmp forLoopTerminationCondition;
+
+forLoopEnd:
+
+invalidParameters:
+
+end quiz12;

@@ -1,0 +1,11 @@
+// File: HelloWorldProc
+program HelloWorldProc;
+#include( "stdlib.hhf" );
+procedure hello; @nodisplay; @noframe;
+begin hello;
+stdout.put( "Hello, World Procedure!", nl );
+ret();
+end hello;
+begin HelloWorldProc;
+call hello;
+end HelloWorldProc;

@@ -1,0 +1,152 @@
+//   File:   SwapperProgram.hla
+//   Author: Johan de Bruin
+
+program SwapperProgram;
+
+#include("stdlib.hhf");
+static
+iValueX : int8 := 0; // the user data
+iValueY : int8 := 0;
+iValueZ : int8 := 0;
+xAddress : dword := 0; // preserve EBX
+yAddress : dword := 0; // preserve EBX
+zAddress : dword := 0; // preserve EBX
+
+
+/////////////////// COPY PASTA
+procedure swap( var i: int8; var j : int8 ); @nodisplay; @noframe;
+// uses the registers EDX, ECX and EBX
+static
+dReturnAddress : dword;
+iTemporary : int8;
+dEDXRegister : dword := 0; // preserve EDX
+dECXRegister : dword := 0; // preserve ECX
+dEBXRegister : dword := 0; // preserve EBX
+begin swap;
+// entry sequence
+// preserve registers
+mov( EBX, dEBXRegister );
+mov( ECX, dECXRegister );
+mov( EDX, dEDXRegister );
+pop( dReturnAddress ); // This is the return address
+pop( EBX ); // This is the address of j
+pop( ECX ); // This is the address of i
+// push back the return address
+push( dReturnAddress );
+// preserve registers
+push( dEDXRegister );
+push( dECXRegister );
+push( dEBXRegister );
+// begin sub-task
+mov( [EBX], EDX ); // EDX = j
+mov( DL, iTemporary ); // temporary = j
+mov( [ECX], EDX ); // EDX = i
+mov( DL, [EBX] ); // j = i
+mov( iTemporary, DL ); // EDX = j
+mov( DL, [ECX] ); // i = temporary
+// exit sequence
+// restore registers
+pop( EBX );
+pop( ECX );
+pop( EDX );
+// transfer control
+ret( ) ;
+end swap;
+/////////////////// END COPY PASTA
+
+
+procedure swapper( var x : int16; var y : int16; var z : int16 ); @nodisplay; @noframe;
+static
+  iReturnAddress : dword;
+  dEDXRegister : dword := 0; // preserve EDX
+  dECXRegister : dword := 0; // preserve ECX
+  dEBXRegister : dword := 0; // preserve EBX
+
+begin swapper;
+
+  mov( EBX, dEBXRegister );
+  mov( ECX, dECXRegister );
+  mov( EDX, dEDXRegister );
+
+  pop(iReturnAddress);
+  pop(EBX); // z
+  pop(ECX); // y
+  pop(EDX); // x
+
+  // TODO
+
+  mov( [ EDX ], AL );
+  mov( [ ECX ], AH );
+
+  cmp(AL, AH);
+  jl skipSwapXY;
+  push(EDX);
+  push(ECX);
+  call swap;
+  skipSwapXY:
+
+  mov( [ EDX ], AL );
+  mov( [ EBX ], AH );
+
+  cmp(AL, AH);
+  jl skipSwapXZ;
+  push(EDX);
+  push(EBX);
+  call swap;
+  skipSwapXZ:
+
+  mov( [ ECX ], AL );
+  mov( [ EBX ], AH );
+
+  cmp(AL, AH);
+  jl skipSwapYZ;
+  push(ECX);
+  push(EBX);
+  call swap;
+  skipSwapYZ:
+
+  // x < y -> swap
+  // x < z -> swap
+  // y < z -> swap
+
+  mov(dEBXRegister, EBX);
+  mov(dECXRegister, ECX);
+  mov(dEDXRegister, EDX);
+  push(iReturnAddress);
+  ret();
+end swapper;
+
+begin SwapperProgram;
+
+stdout.put( "Gimme X: " );
+stdin.get( iValueX );
+stdout.put( "Gimme Y: " );
+stdin.get( iValueY );
+stdout.put( "Gimme z: " );
+stdin.get( iValueZ );
+
+lea( EAX, iValueX ); // get address of iValue1
+mov(EAX, xAddress);
+push( EAX );
+lea( EAX, iValueY ); // get address of iValue1
+mov(EAX, yAddress);
+push( EAX );
+lea( EAX, iValueZ ); // get address of iValue1
+mov(EAX, zAddress);
+push( EAX );
+
+call swapper;
+
+stdout.put("After sorting, X = ");
+mov(xAddress, EBX);
+mov( [ EBX ], CH );
+stdout.puti8(CH);
+stdout.put(", Y = ");
+mov(yAddress, EBX);
+mov( [ EBX ], CH );
+stdout.puti8(CH);
+stdout.put(", Z = ");
+mov(zAddress, EBX);
+mov( [ EBX ], CH );
+stdout.puti8(CH);
+end SwapperProgram;

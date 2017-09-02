@@ -1,0 +1,58 @@
+// File: MaxFunction
+program MaxFunction;
+#include( "stdlib.hhf" );
+static
+iValue1 : int32 := 0;
+iValue2 : int32 := 0;
+// This procedure selects the largest of the parameters passed
+// The largest value will be tossed into EDX for the caller
+// Register EDX must be free for max's use
+procedure max( x: int32; y : int32 ); @nodisplay; @noframe;
+// this caller must free up EDX
+static
+iReturnAddress : dword;
+iMax : int32;
+begin max;
+// entry sequence
+// acquire parameters on the stack
+pop( iReturnAddress );
+pop( y );
+pop( x );
+// push back the return address
+push( iReturnAddress );
+// preserve registers --- NONE
+
+// perform subtask
+// calculate x - y
+mov( x, EDX );
+sub( y, EDX );
+cmp( EDX, 0 );
+jg XisMax;
+jmp YisMax;
+XisMax:
+mov( x, iMax );
+jmp ExitSequence;
+YisMax:
+mov( y, iMax );
+jmp ExitSequence;
+ExitSequence:
+// exit sequence
+// pop all preserved registers --- NONE
+// send return value to EDX
+mov( iMax, EDX );
+ret();
+end max;
+begin MaxFunction;
+stdout.put( "gimme a value: " );
+stdin.get( iValue1 );
+stdout.put( "gimme another value: " );
+stdin.get( iValue2 );
+stdout.put( "Calling Max Function", nl );
+push( iValue1 );
+push( iValue2 );
+call max; // calling max( iValue1, iValue2 );
+stdout.put( "Returned from Max Function", nl );
+stdout.put( "max = " );
+stdout.puti32( EDX );
+stdout.newln();
+end MaxFunction;

@@ -1,0 +1,49 @@
+// File: LoopCountTestBit.hla
+program LoopCountTestBit;
+#include( "stdlib.hhf" );
+static
+iDataValue : int32 := 0; // the value to inspect
+begin LoopCountTestBit;
+
+// Prompt the user
+stdout.put( "Please provide a value to inspect: " );
+stdin.get( iDataValue );
+// get the value into the registers EBX and ECX
+mov( iDataValue, EBX );
+mov( iDataValue, ECX );
+// initialize DH to zero; we'll count set bits in DH
+mov( 0, DH );
+// prepare a bit string to use with TEST instruction
+mov( 1, EDI );
+
+// for i = 0 to 31: count a set bit on each iteration
+forLoop:
+forLoopInit:
+// initialize DL; our loop counter is DL
+mov( 0, DL );
+forLoopTerminationCondition:
+cmp( DL, 31 ); // is DL greater than 31?
+jg forLoopEnd; // is so, end loop
+forLoopBody:
+test( EDI, EBX ); // use TEST instead of ROR
+setnz( AL ); // result of AND tossed into zero flag
+add( AL, DH );
+rol( 1, EDI ); // prepare bit string for next iteration
+forLoopIncrement:
+inc( DL );
+jmp forLoopTerminationCondition;
+forLoopEnd:
+
+// show the results
+stdout.put( "The value ", iDataValue, " = ", ECX, " has " );
+stdout.puti8( DH );
+stdout.put( " set bit" );
+
+// if DH != 1: print an 's'
+ifDHequalsOne:
+cmp( DH, 1 ); // is DH equal to 1?
+je endifDHequalsOne; // if so, skip over next line
+stdout.put( "s" );
+endifDHequalsOne:
+stdout.newln();
+end LoopCountTestBit;

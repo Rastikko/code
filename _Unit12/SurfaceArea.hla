@@ -1,0 +1,38 @@
+//   Ffld( x );ile:   Unit12.hla
+//   Author: Johan de Bruin
+
+program Unit12;
+
+#include("stdlib.hhf");
+static
+  radius : real32;
+  area : real32;
+  four : int16 := 4;
+
+procedure calculateAndDisplayArea; @nodisplay; @noframe;
+
+begin calculateAndDisplayArea;
+
+finit();
+fld(radius); // load r
+fld( st0 );  // load again r
+fmul();  // r^2
+fild(four); // load 4
+fmul(); // r^2*4
+fldpi() ;	 // load pi
+fmul(); // r^2*4*pi
+fstp(area);
+stdout.put("Surface Area = ");
+stdout.putr32(area, 10, 4);
+
+ret();
+end calculateAndDisplayArea;
+
+begin Unit12;
+
+stdout.put("Lemme calculate the surface area of a sphere!", nl);
+stdout.put("Gimme r: ");
+stdin.get(radius);
+call calculateAndDisplayArea;
+
+end Unit12;

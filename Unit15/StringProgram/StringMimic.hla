@@ -1,0 +1,23 @@
+// File: StringMimic.hla
+program StringMimic;
+#include( "stdlib.hhf" );
+#include( "cs17string.hla" );
+const 
+nullchar : byte := 0;
+static
+stringData : byte[4] := [ 'a', 'b', 'c', '0' ];
+stringDataLen : uns16 := 3; // max number of chars
+// string can hold NOT
+// including the NULL
+begin StringMimic;
+// let's try reading stringData
+mov( &stringData, EAX );
+push( EAX );
+push( stringDataLen );
+call gets;
+// let's try writing stringData
+mov( &stringData, EAX );
+push( EAX );
+call puts;
+stdout.newln();
+end StringMimic;

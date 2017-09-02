@@ -1,0 +1,37 @@
+//   File:   Unit8.hla
+//   Author: Johan de Bruin
+
+program triangleDown;
+#include("stdlib.hhf");
+static
+iValue: int32 := 0;
+begin triangleDown;
+
+stdout.put("Gimme a decimal value to use as n: ");
+stdin.get(iValue);
+
+TriangleWhileLp:
+TriangleWhileLpTermination:
+cmp(iValue, 0);
+jbe TriangleWhileLpDone;
+TriangleWhileLpBody:
+
+// Now we loop through the number to ensure we print the triangle number
+mov( iValue, EAX );
+RepeatWhileLp:
+RepeatWhileLpTermination:
+cmp(EAX, 0);
+jbe RepeatWhileLpDone;
+RepeatWhileLpBody:
+stdout.put(iValue);
+dec(EAX);
+jmp RepeatWhileLp;
+RepeatWhileLpDone:
+
+stdout.newln();
+TriangleWhileLpBody2:
+dec(iValue);
+jmp TriangleWhileLp;
+TriangleWhileLpDone:
+
+end triangleDown;

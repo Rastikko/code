@@ -1,0 +1,30 @@
+// File: MallocProgram.hla
+program MallocProgram;
+#include( "stdlib.hhf" );
+static
+iValue : int8 := 0; // the value to inspect
+dMallocAddress : dword := 0; // holds malloc address
+begin MallocProgram;
+stdout.put( "Gimme a value: " );
+stdin.get( iValue );
+// let me try putting it into a pointer
+malloc( @size( int8 ) );
+mov( EAX, dMallocAddress ); // why no []s
+// let me try mucking with it
+// all this just to: mov( iValue, [EAX] )!
+mov( 0, EAX );
+mov( iValue, AL );
+mov( dMallocAddress, EBX );
+mov( EAX, [EBX] ); // why can't I mov( iValue, [EBX] )?
+// all this just to: inc( [EAX] );
+mov( [EBX], EAX );
+inc( EAX );
+mov( EAX, [EBX] ); // why can't I inc( [EBX] )?
+mov( [EBX], EAX );
+mov( AL, iValue );
+
+// let me try free it up
+free( dMallocAddress );
+// show the results
+stdout.put( "I changed it to: ", iValue, nl );
+end MallocProgram;

@@ -1,0 +1,85 @@
+//   File:   Program8.hla
+//   Author: Johan de Bruin
+
+program Program8;
+
+#include("stdlib.hhf");
+#include("cs17string.hla");
+
+static
+dArrayBaseAddress : dword := 0; // holds base address
+stringDataLen : uns16 := 99;
+
+procedure strlen( baseStringAddress: dword ); @nodisplay; @noframe;
+static
+  dReturnAddress : dword;
+  stringLength : int8;
+  cero : int8:= 0;
+
+  dEBXRegister : dword := 0; // preserve EBX
+  dECXRegister : dword := 0; // preserve ECX
+begin strlen;
+
+  mov( EBX, dEBXRegister );
+  mov( ECX, dECXRegister );
+
+  pop( dReturnAddress ); // This is the return address
+  pop( EBX ); // This is the base address of the array
+  pop( ECX );
+
+  push( dReturnAddress );
+  push( dEBXRegister );
+  push( dECXRegister );
+
+  mov(0, AL);
+
+  WhileLp:
+  WhileLpTermination:
+  mov(0, ECX);
+  mov( [ EBX ], CH );
+  cmp( CH, cero );
+  je WhileLpDone;
+  WhileLpBody:
+  mov(0, ECX);
+  mov( [ EBX ], CH );
+  inc( AL );
+  inc( EBX );
+  jmp WhileLp;
+  WhileLpDone:
+
+  pop( ECX );
+  pop( EBX );
+
+  ret();
+end strlen;
+
+begin Program8;
+
+stdout.put("Feed Me: ");
+// Lets just allocate an array with 99 spaces for now
+mov( @size( int8 ), AL );
+mov( 99, BL );
+mul( BL ); // result is in AX
+mov( 0, EBX ); // copy over to EBX
+mov( AX, BX );
+
+// let's malloc the array
+malloc( EBX );
+mov( EAX, dArrayBaseAddress );
+
+push( dArrayBaseAddress );
+push( stringDataLen );
+call gets;
+
+push( dArrayBaseAddress );
+call strlen;
+
+stdout.put("The String You Entered: ");
+puts( dArrayBaseAddress );
+stdout.put(" Has Length = ");
+stdout.puti8(AL);
+
+// FIXME: For some reason it throws an Heap Corruption (during FREE) Exception
+// free(EAX);
+
+end Program8;

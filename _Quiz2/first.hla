@@ -1,0 +1,63 @@
+//   Ffld( x );ile:   Unit13.hla
+//   Author: Johan de Bruin
+
+program Quiz21;
+
+#include("stdlib.hhf");
+
+procedure fib( value : int8 ); @nodisplay; @noframe;
+static
+    temporalNumber : int32;
+    iRegisterValue : dword;
+    iReturnAddress : dword;
+    resultValue : int32;
+    one : int32;
+    two : int32;
+    originalValue: int8;
+begin fib;
+  mov(EBX, iRegisterValue);
+  pop(iReturnAddress);
+  pop(EBX); // number with padding
+
+  mov(BL, value);
+  mov(BL, originalValue);
+
+  mov(1, resultValue);
+  mov(1, one);
+  mov(1, two);
+
+  WhileLp:
+  WhileLpTermination:
+  cmp( value, 3 ); // is I not less than 100?
+  jl WhileLpDone; // then end loop
+  WhileLpBody:
+
+  mov(0, EBX);
+  add(one, EBX);
+  add(two, EBX);
+  mov(EBX, resultValue);
+  mov(two, one);
+  mov(resultValue, two);
+
+  dec( value ); // increment I
+  jmp WhileLp;
+  WhileLpDone:
+
+  stdout.put("fib(", originalValue, ") = ", resultValue, nl);
+
+  mov(iRegisterValue, EBX);
+  push(iReturnAddress);
+  ret();
+end fib;
+
+begin Quiz21;
+
+stdout.put("Provide a value: ");
+mov(0, EBX);
+stdin.get(EBX);
+
+push(EBX);
+
+call fib;
+
+end Quiz21;

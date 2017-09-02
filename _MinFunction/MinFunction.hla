@@ -1,0 +1,102 @@
+// File: MinFunction
+program MinFunction;
+#include( "stdlib.hhf" );
+static
+iValue1 : int8 := 0;
+iValue2 : int8 := 0;
+iValue3 : int8 := 0;
+// This procedure selects the smallest of the parameter passed
+// The smallest value will be tossed into DH for the caller
+// Register DH must be free for min's use
+procedure min( a: int8; b : int8; c : int8 ); @nodisplay; @noframe;
+// this caller must free up DH
+static
+iReturnAddress : dword;
+iMin : int8;
+iTemporary : int16;
+iRegisterValue : dword;
+begin min;
+// entry sequence
+// preserve registers --- EBX place on stack after pops
+mov( EBX, iRegisterValue );
+// acquire parameters on the stack
+pop( iReturnAddress );
+pop( iTemporary ); // this is junk to align the stack
+pop( iTemporary ); // this is c
+mov( iTemporary, BX );
+mov( BL, c );
+pop( iTemporary ); // this is b
+mov( iTemporary, BX );
+mov( BL, b );
+pop( iTemporary ); // this is a
+mov( iTemporary, BX );
+mov( BL, a );
+// push back the return address
+push( iReturnAddress );
+// preserve registers --- EBX
+push( iRegisterValue );
+// perform subtask
+// calculate a - b
+mov( a, DH );
+sub( b, DH );
+cmp( DH, 0 );
+jl AisMin;
+jmp BisMin;
+AisMin:
+// calculate a - c
+mov( a, DH );
+sub( c, DH );
+cmp( DH, 0 );
+jl PutAinDH;
+jmp PutCinDH;
+BisMin:
+// calculate b - c
+mov( b, DH );
+sub( c, DH );
+cmp( DH, 0 );
+jl PutBinDH;
+jmp PutCinDH;
+PutAinDH:
+mov( a, DH );
+jmp ExitSequence;
+PutBinDH:
+mov( b, DH );
+jmp ExitSequence;
+PutCinDH:
+mov( c, DH );
+jmp ExitSequence;
+ExitSequence:
+// exit sequence
+// pop all preserved registers --- BX
+pop( EBX );
+// send return value to DH
+ret();
+end min;
+begin MinFunction;
+stdout.put( "gimme a value: " );
+stdin.get( iValue1 );
+stdout.put( "gimme another value: " );
+stdin.get( iValue2 );
+stdout.put( "gimme a final value: " );
+stdin.get( iValue3 );
+stdout.put( "Calling Min Function", nl );
+// only 16-bit values can be pushed
+mov( 0, BX );
+mov( iValue1, BL );
+push( BX );
+mov( 0, BX );
+mov( iValue2, BL );
+push( BX );
+mov( 0, BX );
+mov( iValue3, BL );
+push( BX );
+// not even multiple of 32-bits pushed onto stack
+// so I am pushing one last piece of junk
+mov( 0, BX );
+push( BX );
+call min; // calling min( iValue1, iValue2, iValue3 );
+stdout.put( "Returned from Min Function", nl );
+stdout.put( "min = " );
+stdout.puti8( DH );
+stdout.newln();
+end MinFunction;

@@ -1,0 +1,86 @@
+// isNotFactor Template Solution For CS 17 Final
+// CS 17 Students must use this template as the basis for their solution.
+// I hope it will help simplify your development task.
+// Please look at the two TODO: notes below
+program isNotFactorProgram;
+#include( "stdlib.hhf" );
+static
+
+iValue: int16 := 0;
+iFactor: int16 := 0;
+iAnswer : int32 := 0;
+
+// TODO: CS 17 Students add code below to implement this function
+// Several hints are supplied
+procedure isNotFactor( value : int16; desiredFactor : int16 );@nodisplay; @noframe;
+
+static dReturnAddress : dword;
+dEDXRegister : dword := 0; // preserve EDX
+dECXRegister : dword := 0; // preserve ECX
+dEBXRegister : dword := 0; // preserve EBX
+iIteration : int16 := 0;
+
+begin isNotFactor;
+
+// entry sequence
+
+// preserve registers used
+pop( dReturnAddress );
+mov( EBX, dEBXRegister ); // pointer to the string
+mov( ECX, dECXRegister ); // helper for iteration
+mov( EDX, dECXRegister ); // helper for conversion
+
+
+pop(BX); // notAFactor
+pop(CX); // value
+
+mov(1, EAX); // not a factor true by default
+
+cmp(BX, 0);
+jng isCeroOrLess;
+
+WhileLp:
+WhileLpTermination:
+cmp( CX, 0 );
+jle WhileLpDone; // then end loop
+WhileLpBody:
+sub(BX, CX);
+jmp WhileLp;
+WhileLpDone:
+
+cmp( CX, 0 ); // is I not less than 100?
+jne isNotAFactor;
+mov(0, EAX);
+isNotAFactor:
+
+isCeroOrLess:
+
+
+push( dReturnAddress );
+mov(dEBXRegister, EBX);
+mov(dECXRegister, ECX);
+mov(dEDXRegister, EDX);
+
+// leave the answer in EAX
+
+ret();
+
+end isNotFactor;
+
+begin isNotFactorProgram;
+
+mov( 16, iValue);
+mov( 7, iFactor );
+
+push(iValue);
+push(iFactor);
+
+call isNotFactor;
+
+mov( EAX, iAnswer );
+
+stdout.put( iAnswer );
+stdout.newln();
+
+
+end isNotFactorProgram;
